@@ -1,0 +1,22 @@
+<nav>
+  <a href="index.html">خانه</a>
+  <a href="auth.html">ورود / ثبت‌نام</a>
+  <a href="rules.html">قوانین</a>
+  <a href="leaderboard.html">لیدربورد</a>
+  <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
+  <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
+</nav>
+
+<script>
+  // نمایش لینک چارت و خروج در صورت لاگین
+  if (localStorage.getItem("loggedIn") === "true") {
+    document.getElementById("chartLink").style.display = "inline-block";
+    document.getElementById("logoutBtn").style.display = "inline-block";
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    alert("از حساب خارج شدید ❌");
+    window.location.href = "auth.html";
+  }
+</script>
