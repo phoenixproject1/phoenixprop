@@ -12,31 +12,24 @@
 <body>
   <h1>چارت زنده</h1>
 
-  <nav>
-    <a href="index.html">خانه</a>
-    <a href="auth.html">ورود / ثبت‌نام</a>
-    <a href="rules.html">قوانین</a>
-    <a href="leaderboard.html">لیدربورد</a>
-    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
-    <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
-  </nav>
+  <!-- هدر مشترک -->
+  <div id="header"></div>
 
   <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=BINANCE:BTCUSDT&interval=15&hidesidetoolbar=1&symboledit=1"></iframe>
 
   <script>
-    if (localStorage.getItem("loggedIn") === "true") {
-      document.getElementById("chartLink").style.display = "inline-block";
-      document.getElementById("logoutBtn").style.display = "inline-block";
-    } else {
-      alert("برای دیدن چارت باید وارد شوید ❌");
-      window.location.href = "auth.html";
-    }
+    // بارگذاری هدر
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header").innerHTML = data;
 
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      alert("از حساب خارج شدید ❌");
-      window.location.href = "auth.html";
-    }
+        // فقط اگر لاگین نبود برگرد auth
+        if (localStorage.getItem("loggedIn") !== "true") {
+          alert("برای دیدن چارت باید وارد شوید ❌");
+          window.location.href = "auth.html";
+        }
+      });
   </script>
 </body>
 </html>
