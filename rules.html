@@ -1,31 +1,68 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>قوانین</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: tahoma, sans-serif; direction: rtl; text-align: center; }
+    nav { background: #333; padding: 10px; }
+    nav a { color: #fff; margin: 0 10px; text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    .content-box { margin: 40px auto; max-width: 600px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; text-align: right; }
+  </style>
 </head>
 <body>
   <h1>قوانین چالش</h1>
 
-  <!-- هدر مشترک -->
-  <div id="header"></div>
+  <nav id="header">
+    <a href="index.html">خانه</a>
+    <a href="auth.html" id="authLink">ورود / ثبت‌نام</a>
+    <a href="rules.html">قوانین</a>
+    <a href="leaderboard.html">لیدربورد</a>
+    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
+    <a href="#" id="logoutBtn" style="display:none;">خروج</a>
+  </nav>
 
-  <ul style="max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-    <li>سرمایه شروع: ۱,۰۰۰ USDT</li>
-    <li>هدف سود: +۱۰٪ در ۳۰ روز</li>
-    <li>حداکثر دراو‌داون: ۵٪</li>
-    <li>ارسال مدارک: CSV معاملات + اسکرین‌شات</li>
-  </ul>
+  <div class="content-box">
+    <h3>قوانین اصلی</h3>
+    <ul>
+      <li>رعایت مدیریت سرمایه الزامی است.</li>
+      <li>حداکثر ضرر روزانه ۵٪ می‌باشد.</li>
+      <li>حداکثر ضرر کلی ۱۰٪ می‌باشد.</li>
+      <li>هدف سودآوری مرحله اول ۸٪ است.</li>
+      <li>هرگونه تقلب باعث حذف دسترسی می‌شود.</li>
+    </ul>
+  </div>
 
   <script>
-    // بارگذاری هدر
-    fetch("header.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("header").innerHTML = data;
-      });
+    function updateHeader() {
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      const chartLink = document.getElementById("chartLink");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const authLink = document.getElementById("authLink");
+
+      if (loggedIn) {
+        chartLink.style.display = "inline-block";
+        logoutBtn.style.display = "inline-block";
+        authLink.style.display = "none";
+      } else {
+        chartLink.style.display = "none";
+        logoutBtn.style.display = "none";
+        authLink.style.display = "inline-block";
+      }
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", function(e){
+      e.preventDefault();
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("currentUser");
+      updateHeader();
+      window.location.href = "auth.html";
+    });
+
+    updateHeader();
   </script>
 </body>
 </html>
