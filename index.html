@@ -9,14 +9,16 @@
 <body>
   <h1>به چالش پراپ تریدینگ خوش آمدید</h1>
 
-  <!-- اینجا هدر مشترک لود میشه -->
+  <!-- هدر مشترک -->
   <div id="header"></div>
 
-  <p style="max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-    اینجا می‌تونی در یک محیط شبیه‌سازی شده، مهارت‌های ترید خودت رو محک بزنی.  
-    ابتدا ثبت‌نام کن، قوانین رو مطالعه کن و بعد به سراغ چارت برو.  
-    عملکردت در لیدربورد نمایش داده خواهد شد.
-  </p>
+  <div class="content-box">
+    <p>
+      اینجا می‌تونی در یک محیط شبیه‌سازی شده، مهارت‌های ترید خودت رو محک بزنی.  
+      ابتدا ثبت‌نام کن، قوانین رو مطالعه کن و بعد به سراغ چارت برو.  
+      عملکردت در لیدربورد نمایش داده خواهد شد.
+    </p>
+  </div>
 
   <script>
     // بارگذاری header.html
@@ -24,6 +26,10 @@
       .then(res => res.text())
       .then(data => {
         document.getElementById("header").innerHTML = data;
+        // بعد از لود شدن هدر، وضعیت کاربر بررسی بشه
+        if (typeof updateHeader === "function") {
+          updateHeader();
+        }
       });
   </script>
 </body>
