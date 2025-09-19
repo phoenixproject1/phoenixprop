@@ -14,7 +14,37 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
+    }<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>چارت</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>چارت</h1>
+
+  <div id="header-container"></div>
+
+  <div class="content-box">
+    <p>اینجا می‌تونیم چارت رو قرار بدیم (مثلاً با TradingView Widget).</p>
+    <iframe src="https://s.tradingview.com/widgetembed/?" width="100%" height="500" frameborder="0"></iframe>
+  </div>
+
+  <script>
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header-container").innerHTML = data;
+        const script = document.createElement("script");
+        script.src = "header.js";
+        document.body.appendChild(script);
+      });
+  </script>
+</body>
+</html>
+
   </style>
 </head>
 <body>
