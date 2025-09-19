@@ -11,8 +11,7 @@
 
   <nav>
     <a href="index.html">خانه</a>
-    <a href="login.html">ورود</a>
-    <a href="register.html">ثبت‌نام</a>
+    <a href="auth.html">ورود / ثبت‌نام</a>
     <a href="rules.html">قوانین</a>
     <a href="leaderboard.html">لیدربورد</a>
     <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
@@ -25,7 +24,6 @@
   </p>
 
   <script>
-    // اگر کاربر لاگین کرده باشه لینک چارت رو نشون بده
     if (localStorage.getItem("loggedIn") === "true") {
       document.getElementById("chartLink").style.display = "inline-block";
     }
