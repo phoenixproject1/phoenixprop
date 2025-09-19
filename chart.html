@@ -23,7 +23,6 @@
   <!-- هدر -->
   <div id="header-container"></div>
 
-  <!-- کانتینر چارت -->
   <div class="tradingview-widget-container">
     <div id="tradingview_chart"></div>
   </div>
@@ -37,8 +36,8 @@
           "container_id": "tradingview_chart",
           "width": "100%",
           "height": "600",
-          "symbol": "BINANCE:BTCUSDT", // 👈 چارت بیت‌کوین
-          "interval": "60",
+          "symbol": "BINANCE:BTCUSDT", // 👈 چارت بیت‌کوین به تتر
+          "interval": "60",            // تایم‌فریم (اینجا 1 ساعت)
           "timezone": "Etc/UTC",
           "theme": "light",
           "style": "1",
@@ -50,7 +49,8 @@
           "save_image": false
         });
       } else {
-        console.error("TradingView library not loaded!");
+        document.getElementById("tradingview_chart").innerHTML =
+          "<p style='text-align:center;color:red'>❌ چارت بارگذاری نشد. لطفاً صفحه را رفرش کنید.</p>";
       }
     });
   </script>
