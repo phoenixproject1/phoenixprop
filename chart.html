@@ -15,29 +15,20 @@
       overflow: hidden;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
       background: #fafafa;
-    }
-    .controls {
-      max-width: 1000px;
-      margin: 10px auto;
       display: flex;
+      align-items: center;
       justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
     }
-    select, button {
-      padding: 6px 10px;
-      font-size: 14px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      cursor: pointer;
+    .fallback {
+      text-align: center;
+      color: #444;
+      font-size: 16px;
     }
-    button {
-      background: #0077ff;
-      color: #fff;
-      border: none;
-    }
-    button:hover {
-      background: #005fcc;
+    .fallback img {
+      max-width: 90%;
+      border-radius: 8px;
+      margin-top: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
     }
   </style>
 </head>
@@ -46,49 +37,25 @@
 
   <div id="header-container"></div>
 
-  <!-- کنترل‌ها -->
-  <div class="controls">
-    <label>
-      انتخاب نماد:
-      <select id="symbol-select">
-        <option value="BINANCE:BTCUSDT">BTC/USDT</option>
-        <option value="BINANCE:ETHUSDT">ETH/USDT</option>
-        <option value="BINANCE:SOLUSDT">SOL/USDT</option>
-        <option value="BINANCE:XRPUSDT">XRP/USDT</option>
-      </select>
-    </label>
-
-    <label>
-      تایم‌فریم:
-      <select id="interval-select">
-        <option value="1">1m</option>
-        <option value="5">5m</option>
-        <option value="15">15m</option>
-        <option value="60" selected>1h</option>
-        <option value="240">4h</option>
-        <option value="1D">1D</option>
-      </select>
-    </label>
-
-    <button id="load-chart">بارگذاری</button>
-  </div>
-
-  <!-- جایگاه چارت -->
   <div class="tradingview-widget-container">
-    <div id="tradingview_chart"></div>
+    <div id="tradingview_chart">
+      <div class="fallback">
+        ⏳ در حال بارگذاری چارت...
+      </div>
+    </div>
   </div>
 
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script>
-    function loadChart(symbol, interval) {
-      document.getElementById("tradingview_chart").innerHTML = ""; // پاکسازی قبلی
-      if (typeof TradingView !== "undefined") {
+    document.addEventListener("DOMContentLoaded", () => {
+      // تست کن آیا TradingView لود شده
+      if (typeof TradingView !== "undefined" && TradingView.widget) {
         new TradingView.widget({
           "container_id": "tradingview_chart",
           "width": "100%",
           "height": "600",
-          "symbol": symbol,
-          "interval": interval,
+          "symbol": "BINANCE:BTCUSDT",
+          "interval": "60",
           "timezone": "Etc/UTC",
           "theme": "light",
           "style": "1",
@@ -100,20 +67,15 @@
           "save_image": false
         });
       } else {
-        document.getElementById("tradingview_chart").innerHTML =
-          "<p style='text-align:center;color:red'>❌ چارت بارگذاری نشد.</p>";
+        // fallback → پیام و یک تصویر نمونه
+        document.getElementById("tradingview_chart").innerHTML = `
+          <div class="fallback">
+            ❌ متاسفانه چارت بارگذاری نشد.<br>
+            لطفاً اتصال اینترنت یا VPN خود را بررسی کنید.<br><br>
+            <img src="fallback-chart.png" alt="نمونه چارت">
+          </div>
+        `;
       }
-    }
-
-    // بارگذاری اولیه
-    document.addEventListener("DOMContentLoaded", () => {
-      loadChart("BINANCE:BTCUSDT", "60");
-
-      document.getElementById("load-chart").addEventListener("click", () => {
-        const symbol = document.getElementById("symbol-select").value;
-        const interval = document.getElementById("interval-select").value;
-        loadChart(symbol, interval);
-      });
     });
   </script>
 
