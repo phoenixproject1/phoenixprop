@@ -12,29 +12,19 @@
 <body>
   <h1>لیدربورد</h1>
 
-  <nav>
-    <a href="index.html">خانه</a>
-    <a href="auth.html">ورود / ثبت‌نام</a>
-    <a href="rules.html">قوانین</a>
-    <a href="leaderboard.html">لیدربورد</a>
-    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
-    <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
-  </nav>
+  <!-- هدر مشترک -->
+  <div id="header"></div>
 
   <!-- لینک Google Sheet خودت رو جایگزین کن -->
   <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vT0DUMMYURL/pubhtml?widget=true&amp;headers=false"></iframe>
 
   <script>
-    if (localStorage.getItem("loggedIn") === "true") {
-      document.getElementById("chartLink").style.display = "inline-block";
-      document.getElementById("logoutBtn").style.display = "inline-block";
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      alert("از حساب خارج شدید ❌");
-      window.location.href = "auth.html";
-    }
+    // بارگذاری هدر
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header").innerHTML = data;
+      });
   </script>
 </body>
 </html>
