@@ -1,36 +1,62 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>صفحه اصلی</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: tahoma, sans-serif; direction: rtl; text-align: center; }
+    nav { background: #333; padding: 10px; }
+    nav a { color: #fff; margin: 0 10px; text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    .content-box { margin: 40px auto; max-width: 600px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+  </style>
 </head>
 <body>
   <h1>به چالش پراپ تریدینگ خوش آمدید</h1>
 
-  <!-- هدر مشترک -->
-  <div id="header"></div>
+  <!-- هدر -->
+  <nav id="header">
+    <a href="index.html">خانه</a>
+    <a href="auth.html" id="authLink">ورود / ثبت‌نام</a>
+    <a href="rules.html">قوانین</a>
+    <a href="leaderboard.html">لیدربورد</a>
+    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
+    <a href="#" id="logoutBtn" style="display:none;">خروج</a>
+  </nav>
 
   <div class="content-box">
-    <p>
-      اینجا می‌تونی در یک محیط شبیه‌سازی شده، مهارت‌های ترید خودت رو محک بزنی.  
-      ابتدا ثبت‌نام کن، قوانین رو مطالعه کن و بعد به سراغ چارت برو.  
-      عملکردت در لیدربورد نمایش داده خواهد شد.
-    </p>
+    <p>این وب‌اپ برای مدیریت و اجرای چالش‌های پراپ تریدینگ طراحی شده است.</p>
   </div>
 
   <script>
-    // بارگذاری header.html
-    fetch("header.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("header").innerHTML = data;
-        // بعد از لود شدن هدر، وضعیت کاربر بررسی بشه
-        if (typeof updateHeader === "function") {
-          updateHeader();
-        }
-      });
+    function updateHeader() {
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      const chartLink = document.getElementById("chartLink");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const authLink = document.getElementById("authLink");
+
+      if (loggedIn) {
+        chartLink.style.display = "inline-block";
+        logoutBtn.style.display = "inline-block";
+        authLink.style.display = "none";
+      } else {
+        chartLink.style.display = "none";
+        logoutBtn.style.display = "none";
+        authLink.style.display = "inline-block";
+      }
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", function(e){
+      e.preventDefault();
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("currentUser");
+      updateHeader();
+      window.location.href = "auth.html";
+    });
+
+    updateHeader();
   </script>
 </body>
 </html>
