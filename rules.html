@@ -15,6 +15,7 @@
     <a href="rules.html">قوانین</a>
     <a href="leaderboard.html">لیدربورد</a>
     <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
+    <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
   </nav>
 
   <ul style="max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
@@ -27,6 +28,13 @@
   <script>
     if (localStorage.getItem("loggedIn") === "true") {
       document.getElementById("chartLink").style.display = "inline-block";
+      document.getElementById("logoutBtn").style.display = "inline-block";
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      alert("از حساب خارج شدید ❌");
+      window.location.href = "auth.html";
     }
   </script>
 </body>
