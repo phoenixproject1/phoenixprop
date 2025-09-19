@@ -9,13 +9,8 @@
 <body>
   <h1>به چالش پراپ تریدینگ خوش آمدید</h1>
 
-  <nav>
-    <a href="index.html">خانه</a>
-    <a href="auth.html">ورود / ثبت‌نام</a>
-    <a href="rules.html">قوانین</a>
-    <a href="leaderboard.html">لیدربورد</a>
-    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
-  </nav>
+  <!-- اینجا هدر مشترک لود میشه -->
+  <div id="header"></div>
 
   <p style="max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
     اینجا می‌تونی در یک محیط شبیه‌سازی شده، مهارت‌های ترید خودت رو محک بزنی.  
@@ -24,9 +19,12 @@
   </p>
 
   <script>
-    if (localStorage.getItem("loggedIn") === "true") {
-      document.getElementById("chartLink").style.display = "inline-block";
-    }
+    // بارگذاری header.html
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header").innerHTML = data;
+      });
   </script>
 </body>
 </html>
