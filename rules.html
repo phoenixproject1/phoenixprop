@@ -9,14 +9,8 @@
 <body>
   <h1>قوانین چالش</h1>
 
-  <nav>
-    <a href="index.html">خانه</a>
-    <a href="auth.html">ورود / ثبت‌نام</a>
-    <a href="rules.html">قوانین</a>
-    <a href="leaderboard.html">لیدربورد</a>
-    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
-    <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
-  </nav>
+  <!-- هدر مشترک -->
+  <div id="header"></div>
 
   <ul style="max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
     <li>سرمایه شروع: ۱,۰۰۰ USDT</li>
@@ -26,16 +20,12 @@
   </ul>
 
   <script>
-    if (localStorage.getItem("loggedIn") === "true") {
-      document.getElementById("chartLink").style.display = "inline-block";
-      document.getElementById("logoutBtn").style.display = "inline-block";
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      alert("از حساب خارج شدید ❌");
-      window.location.href = "auth.html";
-    }
+    // بارگذاری هدر
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header").innerHTML = data;
+      });
   </script>
 </body>
 </html>
