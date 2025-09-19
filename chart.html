@@ -5,17 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>چارت</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body { font-family: tahoma, sans-serif; direction: rtl; text-align: center; }
-    nav { background: #333; padding: 10px; }
-    nav a { color: #fff; margin: 0 10px; text-decoration: none; }
-    nav a:hover { text-decoration: underline; }
-    .chart-box { margin: 30px auto; max-width: 900px; }
-  </style>
 </head>
 <body>
-  <h1>چارت بازار</h1>
+  <h1>چارت</h1>
 
+  <!-- هدر -->
   <nav id="header">
     <a href="index.html">خانه</a>
     <a href="auth.html" id="authLink">ورود / ثبت‌نام</a>
@@ -25,7 +19,10 @@
     <a href="#" id="logoutBtn" style="display:none;">خروج</a>
   </nav>
 
-  <div class="chart-box" id="chartContainer"></div>
+  <div class="content-box">
+    <p>اینجا می‌تونیم چارت رو قرار بدیم (مثلاً با TradingView Widget).</p>
+    <iframe src="https://s.tradingview.com/widgetembed/?" width="100%" height="500" frameborder="0"></iframe>
+  </div>
 
   <script>
     function updateHeader() {
@@ -38,18 +35,10 @@
         chartLink.style.display = "inline-block";
         logoutBtn.style.display = "inline-block";
         authLink.style.display = "none";
-
-        // نمایش چارت
-        const container = document.getElementById("chartContainer");
-        container.innerHTML = `
-          <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=BTCUSDT&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Etc/UTC&withdateranges=1&hidevolume=1" 
-            width="100%" height="600" frameborder="0"></iframe>
-        `;
       } else {
         chartLink.style.display = "none";
         logoutBtn.style.display = "none";
         authLink.style.display = "inline-block";
-        document.getElementById("chartContainer").innerHTML = "<p>لطفاً ابتدا وارد شوید تا چارت را ببینید ❌</p>";
       }
     }
 
@@ -58,7 +47,7 @@
       localStorage.removeItem("loggedIn");
       localStorage.removeItem("currentUser");
       updateHeader();
-      window.location.href = "auth.html";
+      window.location.href = "index.html";
     });
 
     updateHeader();
