@@ -1,30 +1,6 @@
-<nav>
+<nav id="header">
   <a href="index.html">خانه</a>
-  <a href="auth.html" id="authLink">ورود / ثبت‌نام</a>
   <a href="rules.html">قوانین</a>
   <a href="leaderboard.html">لیدربورد</a>
-  <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
-  <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
+  <a href="chart.html">چارت</a>
 </nav>
-
-<script>
-  function updateHeader() {
-    const loggedIn = localStorage.getItem("loggedIn") === "true";
-
-    if (loggedIn) {
-      document.getElementById("chartLink").style.display = "inline-block";
-      document.getElementById("logoutBtn").style.display = "inline-block";
-      document.getElementById("authLink").style.display = "none";
-    } else {
-      document.getElementById("chartLink").style.display = "none";
-      document.getElementById("logoutBtn").style.display = "none";
-      document.getElementById("authLink").style.display = "inline-block";
-    }
-  }
-
-  function logout() {
-    localStorage.removeItem("loggedIn");
-    alert("از حساب خارج شدید ❌");
-    window.location.href = "auth.html";
-  }
-</script>
