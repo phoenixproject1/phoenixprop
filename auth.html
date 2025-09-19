@@ -16,14 +16,8 @@
 <body>
   <h1>ورود یا ثبت‌نام</h1>
 
-  <nav>
-    <a href="index.html">خانه</a>
-    <a href="auth.html">ورود / ثبت‌نام</a>
-    <a href="rules.html">قوانین</a>
-    <a href="leaderboard.html">لیدربورد</a>
-    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
-    <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
-  </nav>
+  <!-- هدر مشترک -->
+  <div id="header"></div>
 
   <div class="form-container">
     <div style="text-align:center;">
@@ -53,6 +47,13 @@
   </div>
 
   <script>
+    // بارگذاری هدر
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header").innerHTML = data;
+      });
+
     function showForm(id) {
       document.querySelectorAll("form").forEach(f => f.classList.remove("active"));
       document.getElementById(id).classList.add("active");
@@ -70,17 +71,6 @@
       localStorage.setItem("loggedIn", "true");
       alert("ثبت‌نام موفق بود ✅");
       window.location.href = "index.html";
-    }
-
-    if (localStorage.getItem("loggedIn") === "true") {
-      document.getElementById("chartLink").style.display = "inline-block";
-      document.getElementById("logoutBtn").style.display = "inline-block";
-    }
-
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      alert("از حساب خارج شدید ❌");
-      window.location.href = "auth.html";
     }
   </script>
 </body>
