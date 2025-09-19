@@ -1,17 +1,10 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>صفحه اصلی</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body { font-family: tahoma, sans-serif; direction: rtl; text-align: center; }
-    nav { background: #333; padding: 10px; }
-    nav a { color: #fff; margin: 0 10px; text-decoration: none; }
-    nav a:hover { text-decoration: underline; }
-    .content-box { margin: 40px auto; max-width: 600px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
-  </style>
 </head>
 <body>
   <h1>به چالش پراپ تریدینگ خوش آمدید</h1>
@@ -27,7 +20,11 @@
   </nav>
 
   <div class="content-box">
-    <p>این وب‌اپ برای مدیریت و اجرای چالش‌های پراپ تریدینگ طراحی شده است.</p>
+    <p>
+      اینجا می‌تونی در یک محیط شبیه‌سازی شده، مهارت‌های ترید خودت رو محک بزنی.  
+      ابتدا ثبت‌نام کن، قوانین رو مطالعه کن و بعد به سراغ چارت برو.  
+      عملکردت در لیدربورد نمایش داده خواهد شد.
+    </p>
   </div>
 
   <script>
@@ -53,7 +50,7 @@
       localStorage.removeItem("loggedIn");
       localStorage.removeItem("currentUser");
       updateHeader();
-      window.location.href = "auth.html";
+      window.location.href = "index.html"; // برگشت به خانه
     });
 
     updateHeader();
