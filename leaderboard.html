@@ -5,19 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>لیدربورد</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body { font-family: tahoma, sans-serif; direction: rtl; text-align: center; }
-    nav { background: #333; padding: 10px; }
-    nav a { color: #fff; margin: 0 10px; text-decoration: none; }
-    nav a:hover { text-decoration: underline; }
-    table { width: 80%; margin: 40px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 10px; }
-    th { background: #eee; }
-  </style>
 </head>
 <body>
   <h1>لیدربورد</h1>
 
+  <!-- هدر -->
   <nav id="header">
     <a href="index.html">خانه</a>
     <a href="auth.html" id="authLink">ورود / ثبت‌نام</a>
@@ -27,20 +19,14 @@
     <a href="#" id="logoutBtn" style="display:none;">خروج</a>
   </nav>
 
-  <table>
-    <thead>
-      <tr>
-        <th>رتبه</th>
-        <th>نام کاربر</th>
-        <th>درصد سود</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>۱</td><td>TraderAli</td><td>+12%</td></tr>
-      <tr><td>۲</td><td>CryptoSara</td><td>+9%</td></tr>
-      <tr><td>۳</td><td>FXMaster</td><td>+7%</td></tr>
-    </tbody>
-  </table>
+  <div class="content-box">
+    <p>در این بخش بهترین تریدرها نمایش داده خواهند شد.</p>
+    <table>
+      <tr><th>نام کاربر</th><th>سود (%)</th></tr>
+      <tr><td>کاربر ۱</td><td>۱۲٪</td></tr>
+      <tr><td>کاربر ۲</td><td>۹٪</td></tr>
+    </table>
+  </div>
 
   <script>
     function updateHeader() {
@@ -65,7 +51,7 @@
       localStorage.removeItem("loggedIn");
       localStorage.removeItem("currentUser");
       updateHeader();
-      window.location.href = "auth.html";
+      window.location.href = "index.html";
     });
 
     updateHeader();
