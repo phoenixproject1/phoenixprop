@@ -15,15 +15,7 @@
 <body>
   <h1>ورود / ثبت‌نام</h1>
 
-  <!-- هدر -->
-  <nav id="header">
-    <a href="index.html">خانه</a>
-    <a href="auth.html" id="authLink">ورود / ثبت‌نام</a>
-    <a href="rules.html">قوانین</a>
-    <a href="leaderboard.html">لیدربورد</a>
-    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
-    <a href="#" id="logoutBtn" style="display:none;">خروج</a>
-  </nav>
+  <div id="header-container"></div>
 
   <div class="content-box">
     <div>
@@ -31,7 +23,6 @@
       <button id="registerTab" class="tab-btn">ثبت‌نام</button>
     </div>
 
-    <!-- فرم ورود -->
     <div id="loginBox" class="form-box active">
       <h3>فرم ورود</h3>
       <form id="loginForm">
@@ -41,7 +32,6 @@
       </form>
     </div>
 
-    <!-- فرم ثبت‌نام -->
     <div id="registerBox" class="form-box">
       <h3>فرم ثبت‌نام</h3>
       <form id="registerForm">
@@ -53,7 +43,7 @@
   </div>
 
   <script>
-    // تغییر تب‌ها
+    // تب‌ها
     const loginTab = document.getElementById("loginTab");
     const registerTab = document.getElementById("registerTab");
     const loginBox = document.getElementById("loginBox");
@@ -97,40 +87,21 @@
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("currentUser", email);
         alert("با موفقیت وارد شدید ✅");
-        window.location.href = "index.html"; // انتقال به خانه بعد از ورود
+        window.location.href = "index.html";
       } else {
         alert("ایمیل یا رمز اشتباه است ❌");
       }
     });
 
-    // بروزرسانی هدر
-    function updateHeader() {
-      const loggedIn = localStorage.getItem("loggedIn") === "true";
-      const chartLink = document.getElementById("chartLink");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const authLink = document.getElementById("authLink");
-
-      if (loggedIn) {
-        chartLink.style.display = "inline-block";
-        logoutBtn.style.display = "inline-block";
-        authLink.style.display = "none";
-      } else {
-        chartLink.style.display = "none";
-        logoutBtn.style.display = "none";
-        authLink.style.display = "inline-block";
-      }
-    }
-
-    // خروج → برگشت به خانه
-    document.getElementById("logoutBtn").addEventListener("click", function(e){
-      e.preventDefault();
-      localStorage.removeItem("loggedIn");
-      localStorage.removeItem("currentUser");
-      updateHeader();
-      window.location.href = "index.html";
-    });
-
-    updateHeader();
+    // لود هدر
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("header-container").innerHTML = data;
+        const script = document.createElement("script");
+        script.src = "header.js";
+        document.body.appendChild(script);
+      });
   </script>
 </body>
 </html>
