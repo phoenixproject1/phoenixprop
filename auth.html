@@ -6,33 +6,15 @@
   <title>ورود / ثبت‌نام</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .tab-buttons {
-      text-align: center;
-      margin-top: 20px;
-    }
-    .tab-buttons button {
-      margin: 0 5px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      background: #40739e;
-      color: #fff;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .tab-buttons button.active {
-      background: #273c75;
-    }
-    .form-box {
-      display: none;
-    }
-    .form-box.active {
-      display: block;
-    }
+    .form-container { max-width: 400px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
+    .form-container h2 { text-align: center; }
+    form { display: none; margin-top: 20px; }
+    form.active { display: block; }
+    nav a { margin-right: 10px; }
   </style>
 </head>
 <body>
-  <h1>ورود / ثبت‌نام</h1>
+  <h1>ورود یا ثبت‌نام</h1>
 
   <nav>
     <a href="index.html">خانه</a>
@@ -40,63 +22,65 @@
     <a href="rules.html">قوانین</a>
     <a href="leaderboard.html">لیدربورد</a>
     <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
+    <a href="#" id="logoutBtn" style="display:none;" onclick="logout()">خروج</a>
   </nav>
 
-  <div class="tab-buttons">
-    <button id="loginTab" class="active" onclick="showForm('login')">ورود</button>
-    <button id="registerTab" onclick="showForm('register')">ثبت‌نام</button>
+  <div class="form-container">
+    <div style="text-align:center;">
+      <button onclick="showForm('loginForm')">ورود</button>
+      <button onclick="showForm('registerForm')">ثبت‌نام</button>
+    </div>
+
+    <!-- فرم ورود -->
+    <form id="loginForm" class="active" onsubmit="login(event)">
+      <h2>ورود</h2>
+      <label>ایمیل:</label>
+      <input type="email" required>
+      <label>رمز عبور:</label>
+      <input type="password" required>
+      <button type="submit">ورود</button>
+    </form>
+
+    <!-- فرم ثبت‌نام -->
+    <form id="registerForm" onsubmit="register(event)">
+      <h2>ثبت‌نام</h2>
+      <label>ایمیل:</label>
+      <input type="email" required>
+      <label>رمز عبور:</label>
+      <input type="password" required>
+      <button type="submit">ثبت‌نام</button>
+    </form>
   </div>
 
-  <!-- فرم ورود -->
-  <form id="loginForm" class="form-box active" onsubmit="login(event)">
-    <input type="text" placeholder="نام کاربری" required>
-    <input type="password" placeholder="رمز عبور" required>
-    <button type="submit">ورود</button>
-  </form>
-
-  <!-- فرم ثبت‌نام -->
-  <form id="registerForm" class="form-box" onsubmit="registerUser(event)">
-    <input type="text" placeholder="نام کاربری" required>
-    <input type="email" placeholder="ایمیل" required>
-    <input type="password" placeholder="رمز عبور" required>
-    <button type="submit">ثبت‌نام</button>
-  </form>
-
   <script>
-    // نمایش لینک چارت اگر کاربر لاگین کرده
-    if (localStorage.getItem("loggedIn") === "true") {
-      document.getElementById("chartLink").style.display = "inline-block";
+    function showForm(id) {
+      document.querySelectorAll("form").forEach(f => f.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
     }
 
-    // جابه‌جایی بین تب‌ها
-    function showForm(type) {
-      document.getElementById("loginForm").classList.remove("active");
-      document.getElementById("registerForm").classList.remove("active");
-      document.getElementById("loginTab").classList.remove("active");
-      document.getElementById("registerTab").classList.remove("active");
-
-      if (type === "login") {
-        document.getElementById("loginForm").classList.add("active");
-        document.getElementById("loginTab").classList.add("active");
-      } else {
-        document.getElementById("registerForm").classList.add("active");
-        document.getElementById("registerTab").classList.add("active");
-      }
-    }
-
-    // شبیه‌سازی ورود
-    function login(e) {
-      e.preventDefault();
+    function login(event) {
+      event.preventDefault();
       localStorage.setItem("loggedIn", "true");
-      alert("ورود موفقیت‌آمیز ✅");
+      alert("با موفقیت وارد شدید ✅");
       window.location.href = "index.html";
     }
 
-    // شبیه‌سازی ثبت‌نام
-    function registerUser(e) {
-      e.preventDefault();
-      alert("ثبت‌نام با موفقیت انجام شد ✅");
-      showForm("login"); // بعد از ثبت‌نام فرم ورود نشون داده میشه
+    function register(event) {
+      event.preventDefault();
+      localStorage.setItem("loggedIn", "true");
+      alert("ثبت‌نام موفق بود ✅");
+      window.location.href = "index.html";
+    }
+
+    if (localStorage.getItem("loggedIn") === "true") {
+      document.getElementById("chartLink").style.display = "inline-block";
+      document.getElementById("logoutBtn").style.display = "inline-block";
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      alert("از حساب خارج شدید ❌");
+      window.location.href = "auth.html";
     }
   </script>
 </body>
