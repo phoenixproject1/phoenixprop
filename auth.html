@@ -6,72 +6,78 @@
   <title>ورود / ثبت‌نام</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .form-container { max-width: 400px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
-    .form-container h2 { text-align: center; }
-    form { display: none; margin-top: 20px; }
-    form.active { display: block; }
-    nav a { margin-right: 10px; }
+    body { font-family: tahoma, sans-serif; direction: rtl; text-align: center; }
+    .auth-container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+    .auth-container h2 { margin-bottom: 15px; }
+    input { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #aaa; border-radius: 5px; }
+    button { padding: 10px 20px; background: #007bff; border: none; border-radius: 5px; color: #fff; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .switch { margin-top: 15px; cursor: pointer; color: #007bff; }
   </style>
 </head>
 <body>
-  <h1>ورود یا ثبت‌نام</h1>
-
-  <!-- هدر مشترک -->
-  <div id="header"></div>
-
-  <div class="form-container">
-    <div style="text-align:center;">
-      <button onclick="showForm('loginForm')">ورود</button>
-      <button onclick="showForm('registerForm')">ثبت‌نام</button>
-    </div>
-
-    <!-- فرم ورود -->
-    <form id="loginForm" class="active" onsubmit="login(event)">
-      <h2>ورود</h2>
-      <label>ایمیل:</label>
-      <input type="email" required>
-      <label>رمز عبور:</label>
-      <input type="password" required>
-      <button type="submit">ورود</button>
-    </form>
-
-    <!-- فرم ثبت‌نام -->
-    <form id="registerForm" onsubmit="register(event)">
-      <h2>ثبت‌نام</h2>
-      <label>ایمیل:</label>
-      <input type="email" required>
-      <label>رمز عبور:</label>
-      <input type="password" required>
-      <button type="submit">ثبت‌نام</button>
-    </form>
+  <div class="auth-container">
+    <h2 id="formTitle">ورود</h2>
+    <input type="email" id="email" placeholder="ایمیل">
+    <input type="password" id="password" placeholder="رمز عبور">
+    <button id="submitBtn">ورود</button>
+    <div class="switch" id="switchForm">ثبت‌نام نکرده‌اید؟ اینجا کلیک کنید</div>
   </div>
 
   <script>
-    // بارگذاری هدر
-    fetch("header.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("header").innerHTML = data;
-      });
+    let isLogin = true; // وضعیت فعلی فرم (ورود یا ثبت‌نام)
 
-    function showForm(id) {
-      document.querySelectorAll("form").forEach(f => f.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-    }
+    const formTitle = document.getElementById("formTitle");
+    const submitBtn = document.getElementById("submitBtn");
+    const switchForm = document.getElementById("switchForm");
 
-    function login(event) {
-      event.preventDefault();
-      localStorage.setItem("loggedIn", "true");
-      alert("با موفقیت وارد شدید ✅");
-      window.location.href = "index.html";
-    }
+    switchForm.addEventListener("click", () => {
+      isLogin = !isLogin;
+      if (isLogin) {
+        formTitle.textContent = "ورود";
+        submitBtn.textContent = "ورود";
+        switchForm.textContent = "ثبت‌نام نکرده‌اید؟ اینجا کلیک کنید";
+      } else {
+        formTitle.textContent = "ثبت‌نام";
+        submitBtn.textContent = "ثبت‌نام";
+        switchForm.textContent = "حساب دارید؟ وارد شوید";
+      }
+    });
 
-    function register(event) {
-      event.preventDefault();
-      localStorage.setItem("loggedIn", "true");
-      alert("ثبت‌نام موفق بود ✅");
-      window.location.href = "index.html";
-    }
+    submitBtn.addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        alert("لطفاً همه فیلدها را پر کنید");
+        return;
+      }
+
+      if (isLogin) {
+        // ورود
+        const storedUser = localStorage.getItem("user_" + email);
+        if (storedUser && JSON.parse(storedUser).password === password) {
+          localStorage.setItem("loggedIn", "true");
+          localStorage.setItem("currentUser", email);
+          alert("ورود موفقیت‌آمیز بود ✅");
+          window.location.href = "index.html";
+        } else {
+          alert("ایمیل یا رمز عبور اشتباه است ❌");
+        }
+      } else {
+        // ثبت‌نام
+        if (localStorage.getItem("user_" + email)) {
+          alert("این ایمیل قبلاً ثبت شده است ❌");
+        } else {
+          localStorage.setItem("user_" + email, JSON.stringify({ email, password }));
+          alert("ثبت‌نام موفقیت‌آمیز بود ✅ حالا وارد شوید");
+          isLogin = true;
+          formTitle.textContent = "ورود";
+          submitBtn.textContent = "ورود";
+          switchForm.textContent = "ثبت‌نام نکرده‌اید؟ اینجا کلیک کنید";
+        }
+      }
+    });
   </script>
 </body>
 </html>
