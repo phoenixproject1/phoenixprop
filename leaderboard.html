@@ -5,20 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>لیدربورد</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 80%;
+      max-width: 800px;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #f8f8f8;
+    }
+  </style>
 </head>
 <body>
   <h1>لیدربورد</h1>
 
   <div id="header-container"></div>
 
-  <div class="content-box">
-    <p>در این بخش بهترین تریدرها نمایش داده خواهند شد.</p>
-    <table>
-      <tr><th>نام کاربر</th><th>سود (%)</th></tr>
-      <tr><td>کاربر ۱</td><td>۱۲٪</td></tr>
-      <tr><td>کاربر ۲</td><td>۹٪</td></tr>
-    </table>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>رتبه</th>
+        <th>نام کاربر</th>
+        <th>سود (%)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>AliTrader</td><td>+12%</td></tr>
+      <tr><td>2</td><td>SaraFx</td><td>+9%</td></tr>
+      <tr><td>3</td><td>Mehdi_Pro</td><td>+7%</td></tr>
+    </tbody>
+  </table>
 
   <script>
     fetch("header.html")
