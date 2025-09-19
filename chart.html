@@ -11,25 +11,22 @@
 
   <nav>
     <a href="index.html">خانه</a>
-    <a href="login.html">ورود</a>
-    <a href="register.html">ثبت‌نام</a>
+    <a href="auth.html">ورود / ثبت‌نام</a>
     <a href="rules.html">قوانین</a>
     <a href="leaderboard.html">لیدربورد</a>
     <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
   </nav>
 
-  <!-- ابزارک چارت از TradingView -->
   <iframe 
     src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=BINANCE:BTCUSDT&interval=15&hidesidetoolbar=1&symboledit=1">
   </iframe>
 
   <script>
-    // نمایش لینک چارت اگر کاربر لاگین کرده
     if (localStorage.getItem("loggedIn") === "true") {
       document.getElementById("chartLink").style.display = "inline-block";
     } else {
       alert("برای دیدن چارت باید وارد شوید ❌");
-      window.location.href = "login.html";
+      window.location.href = "auth.html";
     }
   </script>
 </body>
