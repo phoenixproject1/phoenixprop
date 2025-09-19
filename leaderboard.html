@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لیدربورد</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>لیدربورد</h1>
+
+  <nav>
+    <a href="index.html">خانه</a>
+    <a href="login.html">ورود</a>
+    <a href="register.html">ثبت‌نام</a>
+    <a href="rules.html">قوانین</a>
+    <a href="leaderboard.html">لیدربورد</a>
+    <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
+  </nav>
+
+  <!-- جایگزین لینک زیر با لینک Google Sheet واقعی خودت -->
+  <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vT0DUMMYURL/pubhtml?widget=true&amp;headers=false"></iframe>
+
+  <script>
+    if (localStorage.getItem("loggedIn") === "true") {
+      document.getElementById("chartLink").style.display = "inline-block";
+    }
+  </script>
+</body>
+</html>
