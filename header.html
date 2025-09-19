@@ -1,6 +1,6 @@
 <nav>
   <a href="index.html">خانه</a>
-  <a href="auth.html">ورود / ثبت‌نام</a>
+  <a href="auth.html" id="authLink">ورود / ثبت‌نام</a>
   <a href="rules.html">قوانین</a>
   <a href="leaderboard.html">لیدربورد</a>
   <a href="chart.html" id="chartLink" style="display:none;">چارت</a>
@@ -8,10 +8,18 @@
 </nav>
 
 <script>
-  // نمایش لینک چارت و خروج در صورت لاگین
-  if (localStorage.getItem("loggedIn") === "true") {
-    document.getElementById("chartLink").style.display = "inline-block";
-    document.getElementById("logoutBtn").style.display = "inline-block";
+  function updateHeader() {
+    const loggedIn = localStorage.getItem("loggedIn") === "true";
+
+    if (loggedIn) {
+      document.getElementById("chartLink").style.display = "inline-block";
+      document.getElementById("logoutBtn").style.display = "inline-block";
+      document.getElementById("authLink").style.display = "none";
+    } else {
+      document.getElementById("chartLink").style.display = "none";
+      document.getElementById("logoutBtn").style.display = "none";
+      document.getElementById("authLink").style.display = "inline-block";
+    }
   }
 
   function logout() {
@@ -19,4 +27,7 @@
     alert("از حساب خارج شدید ❌");
     window.location.href = "auth.html";
   }
+
+  // هر بار که هدر لود میشه وضعیت چک بشه
+  updateHeader();
 </script>
