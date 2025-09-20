@@ -25,14 +25,14 @@
     }
     .price-box {
       flex: 1;
-      min-width: 300px;
+      min-width: 320px;
       border: 1px solid #ccc;
       border-radius: 12px;
       background: #fff;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       padding: 15px;
       text-align: left;
-      overflow-y: hidden; /* ✅ اسکرول حذف شد */
+      overflow-y: hidden; /* ✅ جلوگیری از اسکرول */
     }
     table {
       width: 100%;
@@ -51,6 +51,9 @@
     }
     tr:hover {
       background: #f0f8ff;
+    }
+    tr.active-row {
+      background: #e6f2ff !important; /* آبی کم‌رنگ */
     }
     .ask { color: blue; font-weight: bold; } /* 🔵 عرضه */
     .bid { color: green; font-weight: bold; } /* 🟢 تقاضا */
@@ -159,6 +162,7 @@
 
       // چارت پیش‌فرض
       loadChart("BTCUSDT");
+      document.querySelector('[data-symbol="BTCUSDT"]').classList.add("active-row");
 
       // گرفتن داده واقعی از Binance
       async function updatePrices() {
@@ -207,11 +211,16 @@
       updatePrices();
       setInterval(updatePrices, 5000);
 
-      // کلیک روی جدول
+      // کلیک روی جدول → نمایش چارت + هایلایت ردیف
       document.querySelectorAll("#price-table tbody tr").forEach(row => {
         row.addEventListener("click", () => {
           const symbol = row.dataset.symbol;
           loadChart(symbol);
+
+          // حذف هایلایت از همه
+          document.querySelectorAll("#price-table tbody tr").forEach(r => r.classList.remove("active-row"));
+          // اضافه کردن هایلایت به ردیف انتخابی
+          row.classList.add("active-row");
         });
       });
     });
