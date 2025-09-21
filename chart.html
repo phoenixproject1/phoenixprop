@@ -3,16 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>چارت</title>
+  <title>چارت و ترید</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body {
-      font-family: tahoma, sans-serif;
+      font-family: Tahoma, sans-serif;
+      direction: rtl;
       background: #f9f9f9;
       margin: 0;
       padding: 0;
     }
     h1 { text-align: center; margin: 20px 0; }
+
     .container {
       display: flex;
       justify-content: center;
@@ -32,7 +34,7 @@
     }
     .price-box {
       flex: 1;
-      min-width: 300px;
+      min-width: 320px;
       border: 1px solid #ccc;
       border-radius: 12px;
       background: #fff;
@@ -57,40 +59,59 @@
       color: black;
       font-weight: bold;
     }
-    tr:hover {
-      background: #f0f8ff;
-    }
-    tr.selected {
-      background: #d0e7ff !important;
-    }
+    tr:hover { background: #f0f8ff; }
     .ask { color: blue; font-weight: bold; }
     .bid { color: green; font-weight: bold; }
-    .change-pos { color: #006600; font-weight: bold; }
-    .change-neg { color: #cc0000; font-weight: bold; }
+    .change-pos { color: green; font-weight: bold; }
+    .change-neg { color: red; font-weight: bold; }
 
-    /* افکت چشمک‌زن */
-    .flash-green {
-      color: green !important;
-      animation: flashGreen 0.8s ease;
+    /* جدول معاملات */
+    .trade-box {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .flash-red {
-      color: red !important;
-      animation: flashRed 0.8s ease;
+    .trade-actions {
+      margin-bottom: 10px;
     }
-    @keyframes flashGreen {
-      0% { color: black; }
-      50% { color: green; font-weight: bold; }
-      100% { color: black; }
+    .trade-actions input, .trade-actions select, .trade-actions button {
+      margin: 5px;
+      padding: 6px 10px;
+      font-size: 14px;
     }
-    @keyframes flashRed {
-      0% { color: black; }
-      50% { color: red; font-weight: bold; }
-      100% { color: black; }
+    .profit-pos { color: green; font-weight: bold; }
+    .profit-neg { color: red; font-weight: bold; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: center;
+    }
+    .close {
+      float: left;
+      font-size: 20px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>چارت بازار</h1>
+  <h1>چارت بازار و ترید</h1>
 
   <div id="header-container"></div>
 
@@ -100,7 +121,7 @@
       <div id="tradingview_chart"></div>
     </div>
 
-    <!-- جدول -->
+    <!-- جدول قیمت‌ها -->
     <div class="price-box">
       <h3>آخرین قیمت‌ها</h3>
       <table id="price-table">
@@ -142,11 +163,67 @@
     </div>
   </div>
 
+  <!-- بخش ترید -->
+  <div class="trade-box">
+    <div class="trade-actions">
+      <select id="trade-symbol">
+        <option value="BTCUSDT">BTCUSDT</option>
+        <option value="ETHUSDT">ETHUSDT</option>
+        <option value="SOLUSDT">SOLUSDT</option>
+        <option value="XRPUSDT">XRPUSDT</option>
+      </select>
+      <input type="number" id="trade-volume" value="0.1" step="0.01" min="0.01"> حجم
+      <button onclick="openTrade('BUY')">خرید</button>
+      <button onclick="openTrade('SELL')">فروش</button>
+      <button onclick="openSettings()">⚙️ تنظیمات</button>
+    </div>
+    <table id="trades-table">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>نوع</th>
+          <th>حجم</th>
+          <th>قیمت ورود</th>
+          <th>سود/ضرر</th>
+          <th>حد سود/ضرر</th>
+          <th>Trailing</th>
+          <th>بستن</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="8" id="balance-info">Balance: 10000 | Equity: 10000</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Modal تنظیم حد سود/ضرر -->
+  <div id="slModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeSLModal()">&times;</span>
+      <h3>تنظیم حد سود و ضرر</h3>
+      <label>حد سود (Take Profit): </label>
+      <input type="number" id="tp-value"><br><br>
+      <label>حد ضرر (Stop Loss): </label>
+      <input type="number" id="sl-value"><br><br>
+      <label>Trailing Stop: </label>
+      <input type="number" id="ts-value"><br><br>
+      <button onclick="saveSLSettings()">ذخیره</button>
+    </div>
+  </div>
+
   <!-- TradingView -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script>
+    let balance = 10000;
+    let equity = 10000;
+    let trades = [];
+    let currentEditIndex = null;
+
     function loadChart(symbol) {
-      document.getElementById("tradingview_chart").innerHTML = ""; 
+      document.getElementById("tradingview_chart").innerHTML = "";
       new TradingView.widget({
         "container_id": "tradingview_chart",
         "width": "100%",
@@ -166,78 +243,105 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
-      loadChart("BTCUSDT"); // چارت پیش‌فرض
+      const symbols = ["BTCUSDT","ETHUSDT","SOLUSDT","XRPUSDT"];
+      loadChart("BTCUSDT");
 
       async function updatePrices() {
         for (const sym of symbols) {
           try {
             const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`);
             const data = await res.json();
-
             const bid = parseFloat(data.bidPrice).toFixed(2);
             const ask = parseFloat(data.askPrice).toFixed(2);
             const change = parseFloat(data.priceChangePercent).toFixed(2);
 
-            const bidEl = document.getElementById("bid-" + sym);
-            const askEl = document.getElementById("ask-" + sym);
-            const changeEl = document.getElementById("change-" + sym);
+            document.getElementById("bid-"+sym).textContent = bid;
+            document.getElementById("ask-"+sym).textContent = ask;
+            const chEl = document.getElementById("change-"+sym);
+            chEl.textContent = change + "%";
+            chEl.className = change >= 0 ? "change-pos":"change-neg";
 
-            if (!bidEl || !askEl || !changeEl) continue;
-
-            // افکت
-            if (bidEl.textContent !== "---" && parseFloat(bid) > parseFloat(bidEl.textContent)) {
-              bidEl.classList.add("flash-green");
-            } else if (bidEl.textContent !== "---" && parseFloat(bid) < parseFloat(bidEl.textContent)) {
-              bidEl.classList.add("flash-red");
-            }
-            if (askEl.textContent !== "---" && parseFloat(ask) > parseFloat(askEl.textContent)) {
-              askEl.classList.add("flash-green");
-            } else if (askEl.textContent !== "---" && parseFloat(ask) < parseFloat(askEl.textContent)) {
-              askEl.classList.add("flash-red");
-            }
-
-            // مقداردهی
-            bidEl.textContent = bid;
-            askEl.textContent = ask;
-            changeEl.textContent = change + "%";
-            changeEl.className = change >= 0 ? "change-pos" : "change-neg";
-
-            setTimeout(() => {
-              bidEl.classList.remove("flash-green", "flash-red");
-              askEl.classList.remove("flash-green", "flash-red");
-            }, 800);
-
-          } catch (e) {
-            console.error("خطا در دریافت داده برای", sym, e);
-          }
+            // بروزرسانی معاملات باز
+            trades.forEach(tr => {
+              if(tr.symbol === sym) {
+                const currentPrice = tr.type==="BUY"? bid: ask;
+                let profit = (tr.type==="BUY"? (currentPrice-tr.entry): (tr.entry-currentPrice))*tr.volume;
+                tr.pnl = profit.toFixed(2);
+              }
+            });
+            renderTrades();
+          } catch(e) { console.error(e); }
         }
       }
-
       updatePrices();
-      setInterval(updatePrices, 5000);
+      setInterval(updatePrices,5000);
 
-      // کلیک روی جدول
-      document.querySelectorAll("#price-table tbody tr").forEach(row => {
-        row.addEventListener("click", () => {
-          document.querySelectorAll("#price-table tbody tr").forEach(r => r.classList.remove("selected"));
-          row.classList.add("selected");
+      document.querySelectorAll("#price-table tbody tr").forEach(row=>{
+        row.addEventListener("click",()=>{
           loadChart(row.dataset.symbol);
         });
       });
     });
-  </script>
 
-  <!-- بارگذاری هدر -->
-  <script>
-    fetch("header.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("header-container").innerHTML = data;
-        const script = document.createElement("script");
-        script.src = "header.js";
-        document.body.appendChild(script);
+    function openTrade(type){
+      const sym = document.getElementById("trade-symbol").value;
+      const vol = parseFloat(document.getElementById("trade-volume").value);
+      const entry = type==="BUY"? parseFloat(document.getElementById("ask-"+sym).textContent): parseFloat(document.getElementById("bid-"+sym).textContent);
+
+      const trade = {symbol:sym, type, volume:vol, entry, pnl:0, tp:null, sl:null, ts:null};
+      trades.push(trade);
+      renderTrades();
+    }
+
+    function closeTrade(i){
+      const tr = trades[i];
+      balance += parseFloat(tr.pnl);
+      trades.splice(i,1);
+      renderTrades();
+    }
+
+    function renderTrades(){
+      const tbody = document.querySelector("#trades-table tbody");
+      tbody.innerHTML="";
+      equity = balance;
+      trades.forEach((tr,i)=>{
+        equity += parseFloat(tr.pnl);
+        const row = `<tr>
+          <td>${tr.symbol}</td>
+          <td>${tr.type}</td>
+          <td>${tr.volume}</td>
+          <td>${tr.entry}</td>
+          <td class="${tr.pnl>=0?"profit-pos":"profit-neg"}">${tr.pnl}</td>
+          <td>${tr.tp||"---"}/${tr.sl||"---"}</td>
+          <td>${tr.ts||"---"}</td>
+          <td><button onclick="closeTrade(${i})">بستن</button> <button onclick="editSL(${i})">⚙️</button></td>
+        </tr>`;
+        tbody.insertAdjacentHTML("beforeend",row);
       });
+      document.getElementById("balance-info").textContent = `Balance: ${balance.toFixed(2)} | Equity: ${equity.toFixed(2)}`;
+    }
+
+    function openSettings(){
+      alert("اینجا تنظیمات کلی مثل کمیسیون و Drawdown اضافه میشه (بعداً).");
+    }
+
+    function editSL(i){
+      currentEditIndex=i;
+      document.getElementById("slModal").style.display="flex";
+    }
+    function closeSLModal(){ document.getElementById("slModal").style.display="none"; }
+    function saveSLSettings(){
+      const tp=document.getElementById("tp-value").value;
+      const sl=document.getElementById("sl-value").value;
+      const ts=document.getElementById("ts-value").value;
+      if(currentEditIndex!==null){
+        trades[currentEditIndex].tp=tp||null;
+        trades[currentEditIndex].sl=sl||null;
+        trades[currentEditIndex].ts=ts||null;
+      }
+      closeSLModal();
+      renderTrades();
+    }
   </script>
 </body>
 </html>
