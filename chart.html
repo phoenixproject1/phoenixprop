@@ -237,5 +237,92 @@
         document.body.appendChild(script);
       });
   </script>
+<!-- Paper Trading بخش -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const balance = { USDT: 10000 }; // موجودی اولیه کاربر
+    const positions = {}; // پوزیشن‌های باز
+
+    function updateBalanceUI() {
+      let balanceBox = document.getElementById("balance-box");
+      if (!balanceBox) {
+        balanceBox = document.createElement("div");
+        balanceBox.id = "balance-box";
+        balanceBox.style.margin = "20px";
+        balanceBox.style.padding = "10px";
+        balanceBox.style.border = "1px solid #ccc";
+        balanceBox.style.borderRadius = "8px";
+        balanceBox.style.background = "#f9f9f9";
+        document.body.appendChild(balanceBox);
+      }
+      balanceBox.innerHTML = `<b>موجودی: </b> ${balance.USDT.toFixed(2)} USDT`;
+    }
+
+    function openTrade(symbol, side, amount) {
+      if (balance.USDT < amount) {
+        alert("موجودی کافی نیست!");
+        return;
+      }
+
+      balance.USDT -= amount;
+      positions[symbol] = {
+        side,
+        amount,
+        entryPrice: parseFloat(document.getElementById("ask-" + symbol)?.textContent || 0),
+        timestamp: Date.now()
+      };
+
+      alert(`پوزیشن ${side} روی ${symbol} با ${amount} USDT باز شد.`);
+      updateBalanceUI();
+    }
+
+    function closeTrade(symbol) {
+      const pos = positions[symbol];
+      if (!pos) {
+        alert("پوزیشنی برای این نماد باز نیست.");
+        return;
+      }
+
+      const exitPrice = parseFloat(document.getElementById("bid-" + symbol)?.textContent || 0);
+      const profit = (exitPrice - pos.entryPrice) * (pos.side === "BUY" ? 1 : -1);
+
+      balance.USDT += pos.amount + profit;
+      delete positions[symbol];
+
+      alert(`پوزیشن ${symbol} بسته شد. سود/زیان: ${profit.toFixed(2)} USDT`);
+      updateBalanceUI();
+    }
+
+    // اضافه کردن دکمه‌ها به جدول
+    document.querySelectorAll("#price-table tbody tr").forEach(row => {
+      const symbol = row.dataset.symbol;
+
+      const buyBtn = document.createElement("button");
+      buyBtn.textContent = "خرید";
+      buyBtn.style.margin = "2px";
+      buyBtn.onclick = () => openTrade(symbol, "BUY", 100); // 100 USDT تستی
+
+      const sellBtn = document.createElement("button");
+      sellBtn.textContent = "فروش";
+      sellBtn.style.margin = "2px";
+      sellBtn.onclick = () => openTrade(symbol, "SELL", 100);
+
+      const closeBtn = document.createElement("button");
+      closeBtn.textContent = "بستن";
+      closeBtn.style.margin = "2px";
+      closeBtn.onclick = () => closeTrade(symbol);
+
+      const td = document.createElement("td");
+      td.appendChild(buyBtn);
+      td.appendChild(sellBtn);
+      td.appendChild(closeBtn);
+      row.appendChild(td);
+    });
+
+    updateBalanceUI();
+  });
+</script>
+
+  
 </body>
 </html>
