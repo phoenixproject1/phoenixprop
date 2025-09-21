@@ -3,9 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>چارت</title>
+  <title>چارت + ترید</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    body {
+      font-family: tahoma, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      margin: 15px 0;
+    }
     .container {
       display: flex;
       justify-content: center;
@@ -25,64 +35,71 @@
     }
     .price-box {
       flex: 1;
-      min-width: 320px;
+      min-width: 300px;
       border: 1px solid #ccc;
       border-radius: 12px;
       background: #fff;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       padding: 15px;
       text-align: left;
-      overflow-y: hidden; /* ✅ جلوگیری از اسکرول */
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      cursor: pointer;
+      margin-top: 10px;
     }
     th, td {
-      padding: 10px;
+      padding: 8px;
       border: 1px solid #ddd;
       text-align: center;
     }
     th {
       background: #f5f5f5;
-      color: black;
       font-weight: bold;
     }
     tr:hover {
       background: #f0f8ff;
     }
-    tr.active-row {
-      background: #e6f2ff !important; /* آبی کم‌رنگ */
+    .ask { color: blue; font-weight: bold; }
+    .bid { color: green; font-weight: bold; }
+    .change-pos { color: darkgreen; font-weight: bold; }
+    .change-neg { color: darkred; font-weight: bold; }
+    .trade-box {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 15px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .ask { color: blue; font-weight: bold; } /* 🔵 عرضه */
-    .bid { color: green; font-weight: bold; } /* 🟢 تقاضا */
-    .change-pos { color: green; font-weight: bold; }
-    .change-neg { color: red; font-weight: bold; }
-
-    /* افکت چشمک‌زن */
-    .flash-green {
-      color: green !important;
-      animation: flashGreen 0.8s ease;
+    .trade-actions {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 15px;
     }
-    .flash-red {
-      color: red !important;
-      animation: flashRed 0.8s ease;
+    .trade-actions input {
+      width: 100px;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
-    @keyframes flashGreen {
-      0% { color: black; }
-      50% { color: green; font-weight: bold; }
-      100% { color: black; }
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
     }
-    @keyframes flashRed {
-      0% { color: black; }
-      50% { color: red; font-weight: bold; }
-      100% { color: black; }
-    }
+    .btn-buy { background: green; color: white; }
+    .btn-sell { background: red; color: white; }
+    .profit { color: green; font-weight: bold; }
+    .loss { color: red; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>چارت بازار</h1>
+  <h1>پنل ترید</h1>
 
   <div id="header-container"></div>
 
@@ -92,7 +109,7 @@
       <div id="tradingview_chart"></div>
     </div>
 
-    <!-- جدول -->
+    <!-- جدول قیمت‌ها -->
     <div class="price-box">
       <h3>آخرین قیمت‌ها</h3>
       <table id="price-table">
@@ -117,27 +134,43 @@
             <td id="change-ETHUSDT">---</td>
             <td>ETHUSDT</td>
           </tr>
-          <tr data-symbol="SOLUSDT">
-            <td id="ask-SOLUSDT" class="ask">---</td>
-            <td id="bid-SOLUSDT" class="bid">---</td>
-            <td id="change-SOLUSDT">---</td>
-            <td>SOLUSDT</td>
-          </tr>
-          <tr data-symbol="XRPUSDT">
-            <td id="ask-XRPUSDT" class="ask">---</td>
-            <td id="bid-XRPUSDT" class="bid">---</td>
-            <td id="change-XRPUSDT">---</td>
-            <td>XRPUSDT</td>
-          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
+  <!-- فرم ترید -->
+  <div class="trade-box">
+    <h2>ثبت معامله</h2>
+    <div class="trade-actions">
+      <label>حجم: <input type="number" id="trade-volume" value="1" min="1"></label>
+      <button class="btn btn-buy" id="buy-btn">خرید</button>
+      <button class="btn btn-sell" id="sell-btn">فروش</button>
+    </div>
+
+    <h3>پوزیشن‌های باز</h3>
+    <table id="positions-table">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>نوع</th>
+          <th>حجم</th>
+          <th>قیمت ورود</th>
+          <th>سود/ضرر</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
   <!-- TradingView -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script>
+    let positions = [];
+    let currentSymbol = "BTCUSDT";
+
     function loadChart(symbol) {
+      currentSymbol = symbol;
       document.getElementById("tradingview_chart").innerHTML = ""; 
       new TradingView.widget({
         "container_id": "tradingview_chart",
@@ -158,13 +191,12 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
+      const symbols = ["BTCUSDT", "ETHUSDT"];
 
-      // چارت پیش‌فرض
+      // نمایش چارت پیش‌فرض
       loadChart("BTCUSDT");
-      document.querySelector('[data-symbol="BTCUSDT"]').classList.add("active-row");
 
-      // گرفتن داده واقعی از Binance
+      // گرفتن داده از Binance
       async function updatePrices() {
         for (const sym of symbols) {
           try {
@@ -174,55 +206,69 @@
             const ask = parseFloat(data.askPrice).toFixed(2);
             const change = parseFloat(data.priceChangePercent).toFixed(2);
 
-            const bidEl = document.getElementById("bid-" + sym);
-            const askEl = document.getElementById("ask-" + sym);
+            document.getElementById("bid-" + sym).textContent = bid;
+            document.getElementById("ask-" + sym).textContent = ask;
             const changeEl = document.getElementById("change-" + sym);
-
-            // افکت چشمک‌زن
-            if (bidEl.textContent !== "---" && parseFloat(bid) > parseFloat(bidEl.textContent)) {
-              bidEl.classList.add("flash-green");
-            } else if (bidEl.textContent !== "---") {
-              bidEl.classList.add("flash-red");
-            }
-            if (askEl.textContent !== "---" && parseFloat(ask) > parseFloat(askEl.textContent)) {
-              askEl.classList.add("flash-green");
-            } else if (askEl.textContent !== "---") {
-              askEl.classList.add("flash-red");
-            }
-
-            // مقداردهی
-            bidEl.textContent = bid;
-            askEl.textContent = ask;
             changeEl.textContent = change + "%";
             changeEl.className = change >= 0 ? "change-pos" : "change-neg";
 
-            // حذف افکت بعد از انیمیشن
-            setTimeout(() => {
-              bidEl.classList.remove("flash-green", "flash-red");
-              askEl.classList.remove("flash-green", "flash-red");
-            }, 1000);
-
+            // آپدیت سود/ضرر
+            updatePnL(sym, bid, ask);
           } catch (e) {
             console.error("خطا در دریافت داده برای", sym, e);
           }
         }
       }
 
-      updatePrices();
-      setInterval(updatePrices, 5000);
+      // آپدیت PnL
+      function updatePnL(symbol, bid, ask) {
+        positions.forEach(pos => {
+          if (pos.symbol === symbol) {
+            let currentPrice = pos.type === "خرید" ? bid : ask;
+            let pnl = (currentPrice - pos.entry) * pos.volume * (pos.type === "خرید" ? 1 : -1);
+            const pnlCell = document.querySelector(`#positions-table tr[data-id='${pos.id}'] td.pnl`);
+            pnlCell.textContent = pnl.toFixed(2);
+            pnlCell.className = pnl >= 0 ? "profit pnl" : "loss pnl";
+          }
+        });
+      }
 
-      // کلیک روی جدول → نمایش چارت + هایلایت ردیف
+      // ثبت معامله
+      function openPosition(type) {
+        const volume = parseFloat(document.getElementById("trade-volume").value) || 1;
+        const bid = parseFloat(document.getElementById("bid-" + currentSymbol).textContent);
+        const ask = parseFloat(document.getElementById("ask-" + currentSymbol).textContent);
+        if (isNaN(bid) || isNaN(ask)) return alert("قیمت موجود نیست!");
+
+        const entry = type === "خرید" ? ask : bid;
+        const id = Date.now();
+
+        positions.push({ id, symbol: currentSymbol, type, volume, entry });
+
+        const row = `
+          <tr data-id="${id}">
+            <td>${currentSymbol}</td>
+            <td>${type}</td>
+            <td>${volume}</td>
+            <td>${entry}</td>
+            <td class="pnl">0.00</td>
+          </tr>
+        `;
+        document.querySelector("#positions-table tbody").insertAdjacentHTML("beforeend", row);
+      }
+
+      document.getElementById("buy-btn").addEventListener("click", () => openPosition("خرید"));
+      document.getElementById("sell-btn").addEventListener("click", () => openPosition("فروش"));
+
+      // کلیک روی جدول قیمت‌ها
       document.querySelectorAll("#price-table tbody tr").forEach(row => {
         row.addEventListener("click", () => {
-          const symbol = row.dataset.symbol;
-          loadChart(symbol);
-
-          // حذف هایلایت از همه
-          document.querySelectorAll("#price-table tbody tr").forEach(r => r.classList.remove("active-row"));
-          // اضافه کردن هایلایت به ردیف انتخابی
-          row.classList.add("active-row");
+          loadChart(row.dataset.symbol);
         });
       });
+
+      updatePrices();
+      setInterval(updatePrices, 5000);
     });
   </script>
 
@@ -237,92 +283,5 @@
         document.body.appendChild(script);
       });
   </script>
-<!-- Paper Trading بخش -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const balance = { USDT: 10000 }; // موجودی اولیه کاربر
-    const positions = {}; // پوزیشن‌های باز
-
-    function updateBalanceUI() {
-      let balanceBox = document.getElementById("balance-box");
-      if (!balanceBox) {
-        balanceBox = document.createElement("div");
-        balanceBox.id = "balance-box";
-        balanceBox.style.margin = "20px";
-        balanceBox.style.padding = "10px";
-        balanceBox.style.border = "1px solid #ccc";
-        balanceBox.style.borderRadius = "8px";
-        balanceBox.style.background = "#f9f9f9";
-        document.body.appendChild(balanceBox);
-      }
-      balanceBox.innerHTML = `<b>موجودی: </b> ${balance.USDT.toFixed(2)} USDT`;
-    }
-
-    function openTrade(symbol, side, amount) {
-      if (balance.USDT < amount) {
-        alert("موجودی کافی نیست!");
-        return;
-      }
-
-      balance.USDT -= amount;
-      positions[symbol] = {
-        side,
-        amount,
-        entryPrice: parseFloat(document.getElementById("ask-" + symbol)?.textContent || 0),
-        timestamp: Date.now()
-      };
-
-      alert(`پوزیشن ${side} روی ${symbol} با ${amount} USDT باز شد.`);
-      updateBalanceUI();
-    }
-
-    function closeTrade(symbol) {
-      const pos = positions[symbol];
-      if (!pos) {
-        alert("پوزیشنی برای این نماد باز نیست.");
-        return;
-      }
-
-      const exitPrice = parseFloat(document.getElementById("bid-" + symbol)?.textContent || 0);
-      const profit = (exitPrice - pos.entryPrice) * (pos.side === "BUY" ? 1 : -1);
-
-      balance.USDT += pos.amount + profit;
-      delete positions[symbol];
-
-      alert(`پوزیشن ${symbol} بسته شد. سود/زیان: ${profit.toFixed(2)} USDT`);
-      updateBalanceUI();
-    }
-
-    // اضافه کردن دکمه‌ها به جدول
-    document.querySelectorAll("#price-table tbody tr").forEach(row => {
-      const symbol = row.dataset.symbol;
-
-      const buyBtn = document.createElement("button");
-      buyBtn.textContent = "خرید";
-      buyBtn.style.margin = "2px";
-      buyBtn.onclick = () => openTrade(symbol, "BUY", 100); // 100 USDT تستی
-
-      const sellBtn = document.createElement("button");
-      sellBtn.textContent = "فروش";
-      sellBtn.style.margin = "2px";
-      sellBtn.onclick = () => openTrade(symbol, "SELL", 100);
-
-      const closeBtn = document.createElement("button");
-      closeBtn.textContent = "بستن";
-      closeBtn.style.margin = "2px";
-      closeBtn.onclick = () => closeTrade(symbol);
-
-      const td = document.createElement("td");
-      td.appendChild(buyBtn);
-      td.appendChild(sellBtn);
-      td.appendChild(closeBtn);
-      row.appendChild(td);
-    });
-
-    updateBalanceUI();
-  });
-</script>
-
-  
 </body>
 </html>
