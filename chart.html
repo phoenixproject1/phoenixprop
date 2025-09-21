@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>چارت - V02</title>
+  <title>چارت</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    body {
+      font-family: tahoma, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    h1 { text-align: center; margin: 20px 0; }
     .container {
       display: flex;
       justify-content: center;
@@ -40,9 +47,10 @@
       cursor: pointer;
     }
     th, td {
-      padding: 10px;
+      padding: 8px;
       border: 1px solid #ddd;
       text-align: center;
+      font-size: 14px;
     }
     th {
       background: #f5f5f5;
@@ -52,11 +60,13 @@
     tr:hover {
       background: #f0f8ff;
     }
+    tr.selected {
+      background: #d0e7ff !important;
+    }
     .ask { color: blue; font-weight: bold; }
     .bid { color: green; font-weight: bold; }
-    .change-pos { color: green; font-weight: bold; }
-    .change-neg { color: red; font-weight: bold; }
-    .selected-row { background: #e6f0ff !important; }
+    .change-pos { color: #006600; font-weight: bold; }
+    .change-neg { color: #cc0000; font-weight: bold; }
 
     /* افکت چشمک‌زن */
     .flash-green {
@@ -80,7 +90,7 @@
   </style>
 </head>
 <body>
-  <h1>چارت بازار - V02</h1>
+  <h1>چارت بازار</h1>
 
   <div id="header-container"></div>
 
@@ -157,16 +167,14 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
+      loadChart("BTCUSDT"); // چارت پیش‌فرض
 
-      // چارت پیش‌فرض
-      loadChart("BTCUSDT");
-
-      // گرفتن داده واقعی از Binance
       async function updatePrices() {
         for (const sym of symbols) {
           try {
             const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${sym}`);
             const data = await res.json();
+
             const bid = parseFloat(data.bidPrice).toFixed(2);
             const ask = parseFloat(data.askPrice).toFixed(2);
             const change = parseFloat(data.priceChangePercent).toFixed(2);
@@ -175,17 +183,17 @@
             const askEl = document.getElementById("ask-" + sym);
             const changeEl = document.getElementById("change-" + sym);
 
-            if (!bidEl || !askEl || !changeEl) continue; // ✅ رفع مشکل عدم نمایش
+            if (!bidEl || !askEl || !changeEl) continue;
 
-            // افکت چشمک‌زن
+            // افکت
             if (bidEl.textContent !== "---" && parseFloat(bid) > parseFloat(bidEl.textContent)) {
               bidEl.classList.add("flash-green");
-            } else if (bidEl.textContent !== "---") {
+            } else if (bidEl.textContent !== "---" && parseFloat(bid) < parseFloat(bidEl.textContent)) {
               bidEl.classList.add("flash-red");
             }
             if (askEl.textContent !== "---" && parseFloat(ask) > parseFloat(askEl.textContent)) {
               askEl.classList.add("flash-green");
-            } else if (askEl.textContent !== "---") {
+            } else if (askEl.textContent !== "---" && parseFloat(ask) < parseFloat(askEl.textContent)) {
               askEl.classList.add("flash-red");
             }
 
@@ -195,11 +203,10 @@
             changeEl.textContent = change + "%";
             changeEl.className = change >= 0 ? "change-pos" : "change-neg";
 
-            // حذف افکت بعد از انیمیشن
             setTimeout(() => {
               bidEl.classList.remove("flash-green", "flash-red");
               askEl.classList.remove("flash-green", "flash-red");
-            }, 1000);
+            }, 800);
 
           } catch (e) {
             console.error("خطا در دریافت داده برای", sym, e);
@@ -213,10 +220,9 @@
       // کلیک روی جدول
       document.querySelectorAll("#price-table tbody tr").forEach(row => {
         row.addEventListener("click", () => {
-          document.querySelectorAll("#price-table tbody tr").forEach(r => r.classList.remove("selected-row"));
-          row.classList.add("selected-row");
-          const symbol = row.dataset.symbol;
-          loadChart(symbol);
+          document.querySelectorAll("#price-table tbody tr").forEach(r => r.classList.remove("selected"));
+          row.classList.add("selected");
+          loadChart(row.dataset.symbol);
         });
       });
     });
